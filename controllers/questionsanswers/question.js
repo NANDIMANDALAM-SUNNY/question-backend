@@ -59,14 +59,11 @@ const getAllQuestions =  async (req, res) => {
     message: "Error in retrieving questions",
     error: "Bad request",
   };
-  const search = req.query.search || '';
   let sort = req.query.sort || 1;
   QuestionDB.aggregate([
     {
       $sort:{created_at:parseInt(sort)},
     },
-    
-
     {
       $lookup: {
         from: "users",
@@ -85,8 +82,6 @@ const getAllQuestions =  async (req, res) => {
         },
       ]
       },
-      
-      
     },
   
     {
@@ -143,7 +138,13 @@ const getAllQuestions =  async (req, res) => {
   ])
     .exec()
     .then((questionDetails) => {
-      res.status(200).send(questionDetails);
+      if(sort==1){
+        res.status(200).send(questionDetails);
+      }
+      else if (sort==-1){
+        res.status(200).send(questionDetails.reverse());
+
+      }
     })
     .catch((e) => {
       console.log("Error: ", e);
